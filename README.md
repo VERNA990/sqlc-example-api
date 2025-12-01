@@ -1,7 +1,13 @@
 # sqlc-example-api
 
-This repository provides starter code for creating a API using sqlc and the Gin web framework in Go. This is part of the Relational Database course as part of the Iknite Space training.
+This repository provides code for creating a API using sqlc and the Gin web framework in Go. This is an improvement for the started code that was provided. 
+This code support the creation of users, 
+starting of direct messages(chat between two users), 
+creation of group and adding of members, 
+threads(within a group which can be left as public or set to restricted to a few users) and adding of members,
+messages(which can be dm, group or thread messages)
 
+link to api documentation: https://documenter.getpostman.com/view/50168458/2sB3dLVXe9
 
 Project Structure
 

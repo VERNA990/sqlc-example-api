@@ -1,0 +1,383 @@
+{
+  "info": {
+    "_postman_id": "56a4bdfd-f417-4724-abb9-a83fcaf40582",
+    "name": "message_db endpoint tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "create message",
+      "id": "18b6f3eb-c48c-4067-af75-994250721ef9",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sender\": \"340c4b80-9f1b-4a03-a0ae-1934b74fc6ef\",\n  \"content\": \"Hey Bob, how are you?\",\n  \"chat_id\": \"d81ada4e-4d36-4d6b-b1c1-40aea6fcbeaa\",\n  \"chat_type\": \"dms\"\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/message",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "message"
+          ]
+        },
+        "description": "Create Message\n\nSummary  \nCreates a new message in a direct message (DM) chat.\n\nMethod & URL  \nPOST [http://localhost:8085/message](http://localhost:8085/message)\n\nRequest Body (application/json)  \n{  \n\"sender\": \"string (UUID)\" – Required. The unique ID of the user sending the message.  \n\"content\": \"string\" – Required. The message text content.  \n\"chat_id\": \"string (UUID)\" – Required. The unique chat/conversation ID the message belongs to.  \n\"chat_type\": \"string\" – Required. The chat type; for DMs use \"dms\", for GROUPS use \"groups\" and for THREADS use \"threads\".  \n}"
+      }
+    },
+    {
+      "name": "create users",
+      "id": "bfdf26b2-252a-4d34-9aa6-e3b6cb681088",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullname\": \"Alice Johnson\",\n  \"username\": \"alice\",\n  \"email\": \"alice@example.com\"\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/user",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "user"
+          ]
+        },
+        "description": "Purpose  \nCreate a new user in the local user service.\n\nEndpoint\n\n- Method: POST\n    \n- URL: [http://localhost:8085/use](http://localhost:8085/user)\n    \n\nRequest Body  \nProvide JSON with the following fields:\n\n- fullname (string): Full legal name of the user. Example: \"Alice Johnson\"\n    \n- username (string): Unique username (slug-safe). Example: \"alice\"\n    \n- email (string): Valid email address. Example: \"[alice@example.com](https://mailto:alice@example.com)\"\n    \n\nExample\n\n``` json\n{\n  \"fullname\": \"Alice Johnson\",\n  \"username\": \"alice\",\n  \"email\": \"alice@example.com\"\n}\n\n ```\n\nSample Success Response (Illustrative)\n\n``` json\n{\n  \"id\": \"b123f5c0-9d2e-4c61-9a6a-8a2d1c0f3a4e\",\n  \"fullname\": \"Alice Johnson\",\n  \"username\": \"alice\",\n  \"email\": \"alice@example.com\",\n  \"createdAt\": \"2025-01-01T12:34:56.000Z\"\n}\n\n ```"
+      }
+    },
+    {
+      "name": "create group",
+      "id": "88c2af6a-0a71-499d-bc6d-6b42aa20d3f0",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"gp_name\": \"Developers\",\n  \"created_by\": \"340c4b80-9f1b-4a03-a0ae-1934b74fc6ef\"\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/group",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "group"
+          ]
+        },
+        "description": "Purpose  \nCreate a new group.\n\nMethod and URL  \nPOST [http://localhost:8085/group](http://localhost:8085/group)  \nSchema:  \n{  \n\"gp_name\": string, // Required. Human-readable group name. 1-64 chars.  \n\"created_by\": string, // Required. UUID (v4) of the user creating the group.  \n}\n\nValidation Rules\n\n- gp_name: required, non-empty, max 64 characters.\n    \n- created_by: required, must be a valid UUID string."
+      }
+    },
+    {
+      "name": "add members to group by id",
+      "id": "344d398d-3373-4c8f-bded-cc64a34fbc52",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"gp_members_id\": \"2a2370d1-d733-4f1f-8488-c2fd290deb75\",\n  \"gp_members_user_id\": \"19628a12-b749-490b-8895-ecf3e5e580b8\",\n  \"column_3\": \"member\"\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/group/member",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "group",
+            "member"
+          ]
+        },
+        "description": "Summary  \nAdd a user as a member of a group. Creates or updates the membership record identified by gp_members_id and associates it with a user (gp_members_user_id) with the specified role.\n\nEndpoint  \nPOST [http://localhost:8085/group/member](http://localhost:8085/group/member)\n\nMethod  \nPOST\n\nSchema  \n{  \n\"gp_members_id\": \"string (UUID)\",  \n\"gp_members_user_id\": \"string (UUID)\",  \n\"role\": \"string\"  \n}\n\nField descriptions\n\n- gp_members_id (required): Unique identifier of the group membership record. Typically a UUID generated by the server or client to ensure idempotency.\n    \n- gp_members_user_id (required): Unique identifier of the user to add to the group.\n    \n- role (required): Role to assign to the user within the group. Common values: \"member\", \"admin\"\n    \n\ncolumn_3 in request body represents user role in a group"
+      }
+    },
+    {
+      "name": "start thread",
+      "id": "ff4708c4-53cf-4cb9-8fd3-3a5434131720",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"thread_name\": \"Backend Discussion\",\n  \"created_by\": \"340c4b80-9f1b-4a03-a0ae-1934b74fc6ef\",\n  \"gp_id\": \"2a2370d1-d733-4f1f-8488-c2fd290deb75\",\n  \"column_4\": \"public\"\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/thread",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "thread"
+          ]
+        },
+        "description": "Summary  \nCreate a new discussion thread within a group.\n\nEndpoint  \nPOST http://localhost:8085/thread\n\nDescription  \nCreates a thread resource that users can post messages to. The request requires a valid group ID and the user ID of the creator.\n\nPath and Variables\n\n- baseURL (variable): Base API URL provided by your selected environment.\n    \n\nRequest Body  \nContent-Type: application/json  \nSchema  \n{  \n\"thread_name\": string, // Required. Human‑readable title of the thread.  \n\"created_by\": UUID string, // Required. The user ID creating the thread.  \n\"gp_id\": UUID string, // Required. The group ID the thread belongs to.  \n\"column_4\": string // Optional. Default may be public. thread can be either public or restricted  \n}\n\ncolumn_4 represents the visibility of the thread"
+      }
+    },
+    {
+      "name": "Add member to thread",
+      "id": "d964b48a-69b8-4963-bd5a-1586b96e977d",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"thread_members_id\": \"7e037f31-bfbd-4026-80d8-ba441eb5e033\",\n  \"thread_members_user_id\": \"19628a12-b749-490b-8895-ecf3e5e580b8\"\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/thread/member",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "thread",
+            "member"
+          ]
+        },
+        "description": "Purpose  \nAdds a user as a member to an existing thread.\n\nEndpoint  \nPOST {{baseURL}}/thread/member\n\nMethod  \nPOST\n\nPath Params  \nNone. The endpoint does not take path parameters.\n\nRequest Body  \nContent-Type: application/json (raw)  \nSchema:  \n{  \n\"thread_members_id\": \"string (UUID)\", // Unique identifier for the thread membership record to create or upsert  \n\"thread_members_user_id\": \"string (UUID)\" // The user to be added to the thread  \n}  \nField details:\n\n- thread_members_id (required): UUID for the new membership entry. If your backend auto-generates IDs, provide rules accordingly.\n    \n- thread_members_user_id (required): UUID of the user to add as a member of the thread."
+      }
+    },
+    {
+      "name": "start dm",
+      "id": "ea82f792-e64f-47b2-877d-f11cd9005069",
+      "request": {
+        "method": "POST",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"column_1\": \"340c4b80-9f1b-4a03-a0ae-1934b74fc6ef\",\n  \"column_2\": \"19628a12-b749-490b-8895-ecf3e5e580b8\"\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/dm",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "dm"
+          ]
+        },
+        "description": "Summary: Initiates a direct message (DM) thread between two users.\n\nPurpose: Use this endpoint to create a new DM conversation for a user pair.\n\nMethod & URL: POST [http://localhost:8085/dm](http://localhost:8085/dm)\n\nRequest Body Schema (JSON):  \n{  \n\"column_1\": string, // UUID of the first participant  \n\"column_2\": string // UUID of the second participant  \n}\n\ncolumn_1 and columnS_2 represent user1_id and user2a_id respectively\n\nValidation Notes:\n\n- user1_id and user2_id must be valid UUIDs.\n    \n- They should represent two distinct users."
+      }
+    },
+    {
+      "name": "get message by id",
+      "id": "423f22f6-cbf8-402d-a028-f5d52bbca9f1",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseURL}}/message/9e4de47b-b719-45c7-a0c7-c1b6e4d1c694",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "message",
+            "9e4de47b-b719-45c7-a0c7-c1b6e4d1c694"
+          ]
+        },
+        "description": "Purpose  \nRetrieve a single message resource by its unique message_id.\n\nHTTP\n\n- Method: GET\n    \n- URL: {{baseURL}}/message/:message_id\n    \n\nPath parameters\n\n- message_id (string, UUID): The unique identifier of the message to fetch. Example: 5f3618ce-56f3-4751-8f30-c76ff0a5f256"
+      }
+    },
+    {
+      "name": "get dm messages",
+      "id": "d930540c-f037-440f-8c2a-61d88ea67e4e",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseURL}}/message/dm/d81ada4e-4d36-4d6b-b1c1-40aea6fcbeaa",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "message",
+            "dm",
+            "d81ada4e-4d36-4d6b-b1c1-40aea6fcbeaa"
+          ]
+        },
+        "description": "Overview  \nFetches all direct messages (DMs) for a specific chat (conversation) identified by chat_id.\n\nMethod & URL  \nGET [http://localhost:8085/message/dm/:chat_id](http://localhost:8085/message/dm/:chat_id)\n\nPath variables\n\n- chat_id (string, required): The unique identifier of the DM conversation to retrieve messages for.\n    \n\nUsage notes\n\n- Ensure chat_id belongs to a DM conversation; other conversation types may be unsupported by this endpoint."
+      }
+    },
+    {
+      "name": "get thread messages",
+      "id": "6d98c304-249b-451f-bb22-776eafd4fdbb",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": ""
+        },
+        "description": "Purpose  \nRetrieve all messages in a specific thread within a group.\n\nEndpoint  \nGET {{baseURL}}/message/thread/:threadId\n\nPath Parameters\n\n- threadId (UUID, required): The unique identifier of the message thread. Example: 7016044e-20ab-4edd-afa0-84b7a8de2370"
+      }
+    },
+    {
+      "name": "get group messages",
+      "id": "6cc23236-889e-4382-99ed-c36df5c9f95b",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseURL}}/message/group/2a2370d1-d733-4f1f-8488-c2fd290deb75",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "message",
+            "group",
+            "2a2370d1-d733-4f1f-8488-c2fd290deb75"
+          ]
+        },
+        "description": "Retrieves all messages for a specific group chat.\n\n- Method: GET\n    \n- URL: {{baseURL}}/message/group/:chat_id\n    \n- Path params:\n    \n    - chat_id (UUID): The unique identifier of the group chat.\n        \n\nSuccessful response (200): An array of message objects. Example:\n\n``` json\n[{\n  \"chat_id\": \"2a2370d1-d733-4f1f-8488-c2fd290deb75\",\n  \"chat_type\": \"groups\",\n  \"sender_name\": \"Bob Smith\",\n  \"message\": \"Welcome to the Developers group!\",\n  \"time_sent\": \"04:26 PM\",\n  \"day_sent\": \"2025-11-29\"\n}]\n\n ```\n\nNotes:\n\n- Ensure chat_id corresponds to an existing group."
+      }
+    },
+    {
+      "name": "get groups user is part of",
+      "id": "5402d1c3-012c-449f-8a5d-a35122706e6e",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseURL}}/user/group/19628a12-b749-490b-8895-ecf3e5e580b8",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "user",
+            "group",
+            "19628a12-b749-490b-8895-ecf3e5e580b8"
+          ]
+        },
+        "description": "Purpose  \nRetrieves the list of group names that a specific user is a member of.\n\nHTTP\n\n- Method: GET\n    \n- URL: [http://localhost:8085/user/group/:userId](http://localhost:8085/user/group/:userId)\n    \n\nPath parameters\n\n- userId (required): UUID of the user whose group memberships you want to fetch. Example: 19628a12-b749-490b-8895-ecf3e5e580b8"
+      }
+    },
+    {
+      "name": "get threads user started",
+      "id": "37368a5a-cd4e-4705-8e7a-49ae8a8b02c2",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseURL}}/user/thread/creator/340c4b80-9f1b-4a03-a0ae-1934b74fc6ef",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "user",
+            "thread",
+            "creator",
+            "340c4b80-9f1b-4a03-a0ae-1934b74fc6ef"
+          ]
+        },
+        "description": "Purpose: Retrieve threads created by a specific user.\n\nEndpoint & Method:\n\nGET http://localhost:8085/user/thread/creator/:creatorId\n\nPath params:\n\n- creatorId (UUID) — The user ID of the thread creator. Example: 340c4b80-9f1b-4a03-a0ae-1934b74fc6ef"
+      }
+    },
+    {
+      "name": "get groups user created",
+      "id": "1a68c191-efaa-4c33-b540-21b5869b0c77",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseURL}}/user/group/creator/19628a12-b749-490b-8895-ecf3e5e580b8",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "user",
+            "group",
+            "creator",
+            "19628a12-b749-490b-8895-ecf3e5e580b8"
+          ]
+        },
+        "description": "Summary  \nRetrieves the list of groups created by a specific user (creator).\n\nHTTP  \nGET [http://localhost:8085/user/group/creator/:creatorId](http://localhost:8085/user/group/creator/:creatorId)\n\nPath parameters\n\n- creatorId (UUID, required): The unique identifier of the user whose created groups are being requested. In the current example, the value is 19628a12-b749-490b-8895-ecf3e5e580b8."
+      }
+    },
+    {
+      "name": "get threads user is part of",
+      "id": "0501f4f6-a195-4830-bc75-0ba070857ffa",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseURL}}/user/thread/3cf6feb5-346f-43fa-81c8-d264e8cd73c3",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "user",
+            "thread",
+            "3cf6feb5-346f-43fa-81c8-d264e8cd73c3"
+          ]
+        },
+        "description": "Title: Get threads a user is part of\n\nOverview:  \nReturns the list of thread names that the specified user is a member of.\n\nEndpoint:  \nGET http://localhost:8085/user/thread/:userId\n\n- Path parameter userId: UUID of the user whose threads you want to retrieve. Example: 19628a12-b749-490b-8895-ecf3e5e580b8"
+      }
+    },
+    {
+      "name": "get threads that belong to a group",
+      "id": "6458cb46-cdca-4969-91c2-d4d513b125bf",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseURL}}/group/thread/2a2370d1-d733-4f1f-8488-c2fd290deb75",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "group",
+            "thread",
+            "2a2370d1-d733-4f1f-8488-c2fd290deb75"
+          ]
+        },
+        "description": "Summary  \nRetrieve all threads that belong to a specific group.\n\nPurpose  \nUse this endpoint to list discussion threads for a given group so clients can display available conversations before fetching individual thread messages.\n\nHTTP  \nGET http://localhost:8085/group/thread/:group_id\n\nPath parameters\n\n- group_id (UUID, required): The unique identifier of the group whose threads you want to list. Example: 2a2370d1-d733-4f1f-8488-c2fd290deb75"
+      }
+    },
+    {
+      "name": "get list of groups",
+      "id": "d3c8ca28-7837-46e7-8e6f-66925b45cace",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseURL}}/group/group-list",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "group",
+            "group-list"
+          ]
+        },
+        "description": "purpose: Gets list of all groups that exist\n\nGET [http://lcalhost:8085/group/group-list](http://lcalhost:8085/group/group-list)"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "id": "ec160b9d-136e-48b7-89eb-301fc4bbe300",
+      "key": "baseURL",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}
