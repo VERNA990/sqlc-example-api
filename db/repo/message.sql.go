@@ -64,7 +64,17 @@ const addUser = `-- name: AddUser :one
             get number of thread belonging to a group,
              get list of thread belonging to a group,
               create a message,
-               list all groups */ 
+               list all groups 
+
+                delete message by id
+                delete thread by id
+                delete group by id
+                 edit message
+                  remove member from group
+                   remove member from thread
+                    leave group
+                     leave thread
+                      */ 
 
 INSERT INTO users (fullname, username, email) 
 VALUES ($1, $2, $3) RETURNING user_id, fullname, username, email, created_at
@@ -142,6 +152,36 @@ func (q *Queries) CreateMessage(ctx context.Context, arg CreateMessageParams) (M
 		&i.ChatType,
 	)
 	return i, err
+}
+
+const deleteGroupByID = `-- name: DeleteGroupByID :exec
+DELETE FROM groups
+WHERE gp_id = $1
+`
+
+func (q *Queries) DeleteGroupByID(ctx context.Context, gpID string) error {
+	_, err := q.db.Exec(ctx, deleteGroupByID, gpID)
+	return err
+}
+
+const deleteMessageByID = `-- name: DeleteMessageByID :exec
+DELETE FROM messages
+WHERE message_id = $1
+`
+
+func (q *Queries) DeleteMessageByID(ctx context.Context, messageID string) error {
+	_, err := q.db.Exec(ctx, deleteMessageByID, messageID)
+	return err
+}
+
+const deleteThreadByID = `-- name: DeleteThreadByID :exec
+DELETE FROM threads
+WHERE thread_id = $1
+`
+
+func (q *Queries) DeleteThreadByID(ctx context.Context, threadID string) error {
+	_, err := q.db.Exec(ctx, deleteThreadByID, threadID)
+	return err
 }
 
 const getDmMessages = `-- name: GetDmMessages :many

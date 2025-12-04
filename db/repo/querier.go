@@ -14,6 +14,9 @@ type Querier interface {
 	AddUser(ctx context.Context, arg AddUserParams) (User, error)
 	CreateGroup(ctx context.Context, arg CreateGroupParams) (Group, error)
 	CreateMessage(ctx context.Context, arg CreateMessageParams) (Message, error)
+	DeleteGroupByID(ctx context.Context, gpID string) error
+	DeleteMessageByID(ctx context.Context, messageID string) error
+	DeleteThreadByID(ctx context.Context, threadID string) error
 	GetDmMessages(ctx context.Context, chatID string) ([]GetDmMessagesRow, error)
 	GetGroupMessages(ctx context.Context, chatID string) ([]GetGroupMessagesRow, error)
 	GetGroupThreads(ctx context.Context, gpID string) ([]GetGroupThreadsRow, error)

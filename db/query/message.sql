@@ -13,7 +13,17 @@
             get number of thread belonging to a group,
              get list of thread belonging to a group,
               create a message,
-               list all groups */ 
+               list all groups 
+
+                delete message by id
+                delete thread by id
+                delete group by id
+                 edit message
+                  remove member from group
+                   remove member from thread
+                    leave group
+                     leave thread
+                      */ 
 
 -- name: AddUser :one 
 INSERT INTO users (fullname, username, email) 
@@ -144,3 +154,15 @@ WHERE user_id = m.sender
 m.content As message, TO_CHAR(created_at, 'HH12:MI AM') As time_sent, DATE(created_at) AS day_sent
 FROM messages m 
 WHERE m.message_id = $1;
+
+-- name: DeleteMessageByID :exec
+DELETE FROM messages
+WHERE message_id = $1;
+
+-- name: DeleteThreadByID :exec
+DELETE FROM threads
+WHERE thread_id = $1;
+
+-- name: DeleteGroupByID :exec
+DELETE FROM groups
+WHERE gp_id = $1;

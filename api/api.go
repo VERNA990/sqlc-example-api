@@ -43,6 +43,11 @@ func (h *MessageHandler) WireHttpHandler() http.Handler {
 	r.GET("/user/thread/creator/:user_id", h.handleGetThreadsUserStarted)
 	r.GET("/group/thread/:group_id", h.handleGetGroupThread)
 	r.GET("/group/group-list", h.handleGetListOfGroups)
+	
+	r.DELETE("/message/:message_id", h.handleDeleteMessageByID)
+	r.DELETE("/thread/:thread_id", h.handleDeleteThreadByID)
+	r.DELETE("/group/:group_id", h.handleDeleteGroupByID)
+
 
 	return r
 }
@@ -326,4 +331,49 @@ func (h *MessageHandler) handleGetListOfGroups(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, message)
+}
+
+func (h *MessageHandler) handleDeleteMessageByID(c *gin.Context) {
+	id := c.Param("message_id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "message id is required"})
+		return
+	}
+	err := h.querier.DeleteMessageByID(c, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+
+}
+
+func (h *MessageHandler) handleDeleteThreadByID(c *gin.Context) {
+	id := c.Param("thread_id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "thread id is required"})
+		return
+	}
+	err := h.querier.DeleteThreadByID(c, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+
+}
+
+func (h *MessageHandler) handleDeleteGroupByID(c *gin.Context) {
+	id := c.Param("group_id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "group id is required"})
+		return
+	}
+	err := h.querier.DeleteGroupByID(c, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+
 }
