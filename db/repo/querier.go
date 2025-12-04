@@ -17,6 +17,7 @@ type Querier interface {
 	DeleteGroupByID(ctx context.Context, gpID string) error
 	DeleteMessageByID(ctx context.Context, messageID string) error
 	DeleteThreadByID(ctx context.Context, threadID string) error
+	EditMessage(ctx context.Context, arg EditMessageParams) (Message, error)
 	GetDmMessages(ctx context.Context, chatID string) ([]GetDmMessagesRow, error)
 	GetGroupMessages(ctx context.Context, chatID string) ([]GetGroupMessagesRow, error)
 	GetGroupThreads(ctx context.Context, gpID string) ([]GetGroupThreadsRow, error)

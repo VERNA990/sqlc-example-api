@@ -184,6 +184,33 @@ func (q *Queries) DeleteThreadByID(ctx context.Context, threadID string) error {
 	return err
 }
 
+const editMessage = `-- name: EditMessage :one
+UPDATE messages
+SET content = $3
+WHERE message_id = $1 AND sender = $2
+RETURNING message_id, sender, content, created_at, chat_id, chat_type
+`
+
+type EditMessageParams struct {
+	MessageID string  `json:"message_id"`
+	Sender    *string `json:"sender"`
+	Content   string  `json:"content"`
+}
+
+func (q *Queries) EditMessage(ctx context.Context, arg EditMessageParams) (Message, error) {
+	row := q.db.QueryRow(ctx, editMessage, arg.MessageID, arg.Sender, arg.Content)
+	var i Message
+	err := row.Scan(
+		&i.MessageID,
+		&i.Sender,
+		&i.Content,
+		&i.CreatedAt,
+		&i.ChatID,
+		&i.ChatType,
+	)
+	return i, err
+}
+
 const getDmMessages = `-- name: GetDmMessages :many
 SELECT m.chat_id, m.chat_type, 
 (SELECT fullname FROM users 

@@ -165,4 +165,13 @@ WHERE thread_id = $1;
 
 -- name: DeleteGroupByID :exec
 DELETE FROM groups
-WHERE gp_id = $1;
+WHERE gp_id = $1 ;
+
+-- name: EditMessage :one
+UPDATE messages
+SET content = $3
+WHERE message_id = $1 AND sender = $2
+RETURNING *;
+
+
+
