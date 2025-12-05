@@ -24,6 +24,7 @@ type Querier interface {
 	GetGroupsUserCreated(ctx context.Context, createdBy string) ([]GetGroupsUserCreatedRow, error)
 	GetListOfGroups(ctx context.Context) ([]GetListOfGroupsRow, error)
 	GetMessageByID(ctx context.Context, messageID string) (GetMessageByIDRow, error)
+	GetMessageReceiver(ctx context.Context, messageID string) (GetMessageReceiverRow, error)
 	GetThreadMessages(ctx context.Context, chatID string) ([]GetThreadMessagesRow, error)
 	GetThreadsUserStarted(ctx context.Context, createdBy *string) ([]GetThreadsUserStartedRow, error)
 	GetUserGroups(ctx context.Context, gpMembersUserID string) ([]string, error)

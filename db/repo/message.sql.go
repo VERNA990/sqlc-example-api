@@ -72,6 +72,7 @@ const addUser = `-- name: AddUser :one
                  edit message
                   remove member from group/ user leaves the group
                    remove member from thread/ user leaves the thread
+                   in a dm chat identify the receiver of the message by id
                       */ 
 
 INSERT INTO users (fullname, username, email) 
@@ -455,6 +456,31 @@ func (q *Queries) GetMessageByID(ctx context.Context, messageID string) (GetMess
 		&i.TimeSent,
 		&i.DaySent,
 	)
+	return i, err
+}
+
+const getMessageReceiver = `-- name: GetMessageReceiver :one
+/*to get the receivers name here 
+we can later on retrieve the id from here and pass it to another query to get the receivers name*/
+SELECT 
+CASE 
+      WHEN d.user1_id = m.sender THEN d.user2_id
+      ELSE d.user1_id
+END As receiver_id, m.content FROM messages m
+
+JOIN dms d ON m.chat_id = d.dm_id
+WHERE m.message_id = $1 AND chat_type = 'dms'
+`
+
+type GetMessageReceiverRow struct {
+	ReceiverID interface{} `json:"receiver_id"`
+	Content    string      `json:"content"`
+}
+
+func (q *Queries) GetMessageReceiver(ctx context.Context, messageID string) (GetMessageReceiverRow, error) {
+	row := q.db.QueryRow(ctx, getMessageReceiver, messageID)
+	var i GetMessageReceiverRow
+	err := row.Scan(&i.ReceiverID, &i.Content)
 	return i, err
 }
 

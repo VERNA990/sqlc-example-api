@@ -21,6 +21,7 @@
                  edit message
                   remove member from group/ user leaves the group
                    remove member from thread/ user leaves the thread
+                   in a dm chat identify the receiver of the message by id
                       */ 
 
 -- name: AddUser :one 
@@ -181,3 +182,14 @@ WHERE gp_members_id=$1 AND gp_members_user_id = $2;
 DELETE FROM thread_members
 WHERE thread_members_id=$1 AND thread_members_user_id = $2;
 
+/*to get the receivers name here 
+we can later on retrieve the id from here and pass it to another query to get the receivers name*/
+-- name: GetMessageReceiver :one
+SELECT 
+CASE 
+      WHEN d.user1_id = m.sender THEN d.user2_id
+      ELSE d.user1_id
+END As receiver_id, m.content FROM messages m
+
+JOIN dms d ON m.chat_id = d.dm_id
+WHERE m.message_id = $1 AND chat_type = 'dms';
