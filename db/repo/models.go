@@ -165,6 +165,7 @@ type Message struct {
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	ChatID    string           `json:"chat_id"`
 	ChatType  ChattypeEnum     `json:"chat_type"`
+	EditedAt  pgtype.Timestamp `json:"edited_at"`
 }
 
 type Thread struct {

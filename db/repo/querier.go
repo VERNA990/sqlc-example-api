@@ -14,10 +14,10 @@ type Querier interface {
 	AddUser(ctx context.Context, arg AddUserParams) (User, error)
 	CreateGroup(ctx context.Context, arg CreateGroupParams) (Group, error)
 	CreateMessage(ctx context.Context, arg CreateMessageParams) (Message, error)
-	DeleteGroupByID(ctx context.Context, gpID string) error
+	DeleteGroupByID(ctx context.Context, arg DeleteGroupByIDParams) error
 	DeleteMessageByID(ctx context.Context, messageID string) error
-	DeleteThreadByID(ctx context.Context, threadID string) error
-	EditMessage(ctx context.Context, arg EditMessageParams) (Message, error)
+	DeleteThreadByID(ctx context.Context, arg DeleteThreadByIDParams) error
+	EditMessage(ctx context.Context, arg EditMessageParams) (EditMessageRow, error)
 	GetDmMessages(ctx context.Context, chatID string) ([]GetDmMessagesRow, error)
 	GetGroupMessages(ctx context.Context, chatID string) ([]GetGroupMessagesRow, error)
 	GetGroupThreads(ctx context.Context, gpID string) ([]GetGroupThreadsRow, error)
@@ -28,6 +28,9 @@ type Querier interface {
 	GetThreadsUserStarted(ctx context.Context, createdBy *string) ([]GetThreadsUserStartedRow, error)
 	GetUserGroups(ctx context.Context, gpMembersUserID string) ([]string, error)
 	GetUserThreads(ctx context.Context, threadMembersUserID string) ([]string, error)
+	//code logic will implement access control for this
+	RemoveGroupMember(ctx context.Context, arg RemoveGroupMemberParams) error
+	RemoveThreadMember(ctx context.Context, arg RemoveThreadMemberParams) error
 	StartDm(ctx context.Context, arg StartDmParams) (Dm, error)
 	StartThread(ctx context.Context, arg StartThreadParams) (Thread, error)
 }

@@ -57,3 +57,6 @@ CREATE TABLE IF NOT EXISTS "messages" (
 "chat_id" VARCHAR(36) NOT NULL, 
 "chat_type" chattype_enum NOT NULL 
 );
+
+ALTER TABLE IF EXISTS "messages"
+ADD COLUMN edited_at TIMESTAMP NULL;

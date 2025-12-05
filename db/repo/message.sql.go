@@ -70,10 +70,8 @@ const addUser = `-- name: AddUser :one
                 delete thread by id
                 delete group by id
                  edit message
-                  remove member from group
-                   remove member from thread
-                    leave group
-                     leave thread
+                  remove member from group/ user leaves the group
+                   remove member from thread/ user leaves the thread
                       */ 
 
 INSERT INTO users (fullname, username, email) 
@@ -125,7 +123,7 @@ func (q *Queries) CreateGroup(ctx context.Context, arg CreateGroupParams) (Group
 const createMessage = `-- name: CreateMessage :one
 INSERT INTO messages (sender, content, chat_id, chat_type) 
 VALUES ($1, $2, $3, $4) 
-RETURNING message_id, sender, content, created_at, chat_id, chat_type
+RETURNING message_id, sender, content, created_at, chat_id, chat_type, edited_at
 `
 
 type CreateMessageParams struct {
@@ -150,17 +148,23 @@ func (q *Queries) CreateMessage(ctx context.Context, arg CreateMessageParams) (M
 		&i.CreatedAt,
 		&i.ChatID,
 		&i.ChatType,
+		&i.EditedAt,
 	)
 	return i, err
 }
 
 const deleteGroupByID = `-- name: DeleteGroupByID :exec
 DELETE FROM groups
-WHERE gp_id = $1
+WHERE gp_id = $1 AND created_by = $2
 `
 
-func (q *Queries) DeleteGroupByID(ctx context.Context, gpID string) error {
-	_, err := q.db.Exec(ctx, deleteGroupByID, gpID)
+type DeleteGroupByIDParams struct {
+	GpID      string `json:"gp_id"`
+	CreatedBy string `json:"created_by"`
+}
+
+func (q *Queries) DeleteGroupByID(ctx context.Context, arg DeleteGroupByIDParams) error {
+	_, err := q.db.Exec(ctx, deleteGroupByID, arg.GpID, arg.CreatedBy)
 	return err
 }
 
@@ -176,19 +180,25 @@ func (q *Queries) DeleteMessageByID(ctx context.Context, messageID string) error
 
 const deleteThreadByID = `-- name: DeleteThreadByID :exec
 DELETE FROM threads
-WHERE thread_id = $1
+WHERE thread_id = $1 AND created_by = $2
 `
 
-func (q *Queries) DeleteThreadByID(ctx context.Context, threadID string) error {
-	_, err := q.db.Exec(ctx, deleteThreadByID, threadID)
+type DeleteThreadByIDParams struct {
+	ThreadID  string  `json:"thread_id"`
+	CreatedBy *string `json:"created_by"`
+}
+
+func (q *Queries) DeleteThreadByID(ctx context.Context, arg DeleteThreadByIDParams) error {
+	_, err := q.db.Exec(ctx, deleteThreadByID, arg.ThreadID, arg.CreatedBy)
 	return err
 }
 
 const editMessage = `-- name: EditMessage :one
 UPDATE messages
-SET content = $3
+SET content = $3,
+edited_at = now()
 WHERE message_id = $1 AND sender = $2
-RETURNING message_id, sender, content, created_at, chat_id, chat_type
+RETURNING message_id, sender, content, edited_at
 `
 
 type EditMessageParams struct {
@@ -197,16 +207,21 @@ type EditMessageParams struct {
 	Content   string  `json:"content"`
 }
 
-func (q *Queries) EditMessage(ctx context.Context, arg EditMessageParams) (Message, error) {
+type EditMessageRow struct {
+	MessageID string           `json:"message_id"`
+	Sender    *string          `json:"sender"`
+	Content   string           `json:"content"`
+	EditedAt  pgtype.Timestamp `json:"edited_at"`
+}
+
+func (q *Queries) EditMessage(ctx context.Context, arg EditMessageParams) (EditMessageRow, error) {
 	row := q.db.QueryRow(ctx, editMessage, arg.MessageID, arg.Sender, arg.Content)
-	var i Message
+	var i EditMessageRow
 	err := row.Scan(
 		&i.MessageID,
 		&i.Sender,
 		&i.Content,
-		&i.CreatedAt,
-		&i.ChatID,
-		&i.ChatType,
+		&i.EditedAt,
 	)
 	return i, err
 }
@@ -590,6 +605,37 @@ func (q *Queries) GetUserThreads(ctx context.Context, threadMembersUserID string
 		return nil, err
 	}
 	return items, nil
+}
+
+const removeGroupMember = `-- name: RemoveGroupMember :exec
+DELETE FROM gp_members
+WHERE gp_members_id=$1 AND gp_members_user_id = $2
+`
+
+type RemoveGroupMemberParams struct {
+	GpMembersID     string `json:"gp_members_id"`
+	GpMembersUserID string `json:"gp_members_user_id"`
+}
+
+// code logic will implement access control for this
+func (q *Queries) RemoveGroupMember(ctx context.Context, arg RemoveGroupMemberParams) error {
+	_, err := q.db.Exec(ctx, removeGroupMember, arg.GpMembersID, arg.GpMembersUserID)
+	return err
+}
+
+const removeThreadMember = `-- name: RemoveThreadMember :exec
+DELETE FROM thread_members
+WHERE thread_members_id=$1 AND thread_members_user_id = $2
+`
+
+type RemoveThreadMemberParams struct {
+	ThreadMembersID     string `json:"thread_members_id"`
+	ThreadMembersUserID string `json:"thread_members_user_id"`
+}
+
+func (q *Queries) RemoveThreadMember(ctx context.Context, arg RemoveThreadMemberParams) error {
+	_, err := q.db.Exec(ctx, removeThreadMember, arg.ThreadMembersID, arg.ThreadMembersUserID)
+	return err
 }
 
 const startDm = `-- name: StartDm :one

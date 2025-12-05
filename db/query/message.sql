@@ -19,10 +19,8 @@
                 delete thread by id
                 delete group by id
                  edit message
-                  remove member from group
-                   remove member from thread
-                    leave group
-                     leave thread
+                  remove member from group/ user leaves the group
+                   remove member from thread/ user leaves the thread
                       */ 
 
 -- name: AddUser :one 
@@ -161,17 +159,25 @@ WHERE message_id = $1;
 
 -- name: DeleteThreadByID :exec
 DELETE FROM threads
-WHERE thread_id = $1;
+WHERE thread_id = $1 AND created_by = $2;
 
 -- name: DeleteGroupByID :exec
 DELETE FROM groups
-WHERE gp_id = $1 ;
+WHERE gp_id = $1 AND created_by = $2;
 
 -- name: EditMessage :one
 UPDATE messages
-SET content = $3
+SET content = $3,
+edited_at = now()
 WHERE message_id = $1 AND sender = $2
-RETURNING *;
+RETURNING message_id, sender, content, edited_at;
 
+/*code logic will implement access control for this*/
+-- name: RemoveGroupMember :exec
+DELETE FROM gp_members
+WHERE gp_members_id=$1 AND gp_members_user_id = $2;
 
+-- name: RemoveThreadMember :exec
+DELETE FROM thread_members
+WHERE thread_members_id=$1 AND thread_members_user_id = $2;
 
