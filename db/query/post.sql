@@ -6,7 +6,7 @@ RETURNING *;
 
 -- name: GetPostByID :one
 SELECT * FROM "post"
-WHERE "id" = $1 LIMIT 1;
+WHERE "id" = $1;
 
 -- name: ListAllPosts :many
 SELECT * FROM "post"

@@ -51,7 +51,7 @@ func (q *Queries) DeletePost(ctx context.Context, arg DeletePostParams) error {
 
 const getPostByID = `-- name: GetPostByID :one
 SELECT id, user_id, title, content, created_at FROM "post"
-WHERE "id" = $1 LIMIT 1
+WHERE "id" = $1
 `
 
 func (q *Queries) GetPostByID(ctx context.Context, id int32) (Post, error) {

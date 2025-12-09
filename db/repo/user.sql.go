@@ -37,7 +37,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateU
 
 const getUserByID = `-- name: GetUserByID :one
 SELECT "id", "user_name", "created_at" FROM "user"
-WHERE "id" = $1 LIMIT 1
+WHERE "id" = $1
 `
 
 type GetUserByIDRow struct {
@@ -55,7 +55,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id int32) (GetUserByIDRow, er
 
 const getUserByUsername = `-- name: GetUserByUsername :one
 SELECT id, user_name, password_hash, created_at FROM "user"
-WHERE "user_name" = $1 LIMIT 1
+WHERE "user_name" = $1
 `
 
 func (q *Queries) GetUserByUsername(ctx context.Context, userName string) (User, error) {
