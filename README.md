@@ -7,6 +7,8 @@ creation of group and adding of members,
 threads(within a group which can be left as public or set to restricted to a few users) and adding of members,
 messages(which can be dm, group or thread messages)
 
+I later on set up the CI for this repository that check that the code follows go format and style and that the code has no vulnerabilities. Finally runs and builds
+
 link to api documentation: https://documenter.getpostman.com/view/50168458/2sB3dLVXe9
 
 Project Structure
