@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
     golangci:
         name: GolangCI Lint
-        runs-on: ubuntu latest
+        runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v5
             - uses: actions/setup-go@v6
@@ -19,7 +19,7 @@ jobs:
 
     govulncheck_job:
         name: GovulnCheck
-        runs-on: ubuntu latest
+        runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v5
             - name: Run govulncheck
@@ -30,7 +30,7 @@ jobs:
 
     test:
         name: test code
-        runs-on: ubuntu latest
+        runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v5
             - uses: actions/setup-go@v6
@@ -41,7 +41,7 @@ jobs:
               
     build:
         name: build
-        runs-on: ubuntu latest
+        runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v5
             - uses: actions/setup-go@v6
