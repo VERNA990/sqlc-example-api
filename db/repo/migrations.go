@@ -2,11 +2,13 @@ package repo
 
 import (
 	"errors"
+	"log"
 	"path/filepath"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres" // Postgres driver
-	_ "github.com/golang-migrate/migrate/v4/source/file"       // File source for migrations
+	_"github.com/golang-migrate/migrate/v4/source"
+	_ "github.com/golang-migrate/migrate/v4/source/file" // File source for migrations
 )
 
 // Migrate function applies migrations to the database.
@@ -25,7 +27,17 @@ func Migrate(dbURL string, migrationsPath string) error {
 	if err != nil {
 		return err
 	}
-	defer m.Close()
+	defer func() {
+		sourceErr, dbErr := m.Close()
+		if sourceErr != nil {
+			log.Printf("failed to close migration source: %v", sourceErr)
+		}
+
+		if dbErr != nil {
+			log.Printf("failed to close database connection: %v", sourceErr)
+		}
+
+	}()
 
 	// Apply migrations
 	err = m.Up()
@@ -51,7 +63,17 @@ func MigrateDown(dbURL string, migrationsPath string) error {
 	if err != nil {
 		return err
 	}
-	defer m.Close()
+	defer func() {
+		sourceErr, dbErr := m.Close()
+		if sourceErr != nil {
+			log.Printf("failed to close migration source: %v", sourceErr)
+		}
+
+		if dbErr != nil {
+			log.Printf("failed to close database connection: %v", sourceErr)
+		}
+
+	}()
 
 	// Apply migrations
 	err = m.Down()

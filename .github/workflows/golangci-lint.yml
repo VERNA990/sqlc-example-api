@@ -1,0 +1,69 @@
+name: code checker
+
+on: [push, pull_request]
+
+jobs:
+    golangci:
+        strategy:
+            matrix:
+                go: [stable]
+                os: [ubuntu-latest, macos-latest, windows-latest]
+        name: GolangCI Lint
+        runs-on: ${{ matrix.os }}
+        steps:
+            - uses: actions/checkout@v5
+            - uses: actions/setup-go@v6
+              with:
+                go-version: ${{ matrix.go }}
+            - name: Run golangci-lint
+              uses: golangci/golangci-lint-action@v9
+              with:
+                version: v2.6
+
+
+    govulncheck_job:
+        strategy:
+            matrix:
+                go: [stable]
+                os: [ubuntu-latest, macos-latest, windows-latest]
+        name: GovulnCheck
+        runs-on: ${{ matrix.os }}
+        steps:
+            - uses: actions/checkout@v5
+            - name: Run govulncheck
+              uses: golang/govulncheck-action@v1
+              with:
+                go-version-input: ${{ matrix.go }}
+                go-package: ./...
+
+    test:
+        strategy:
+            matrix:
+                go: [stable]
+                os: [ubuntu-latest, macos-latest, windows-latest]
+        name: test code
+        runs-on: ${{ matrix.os }}
+        steps:
+            - uses: actions/checkout@v5
+            - uses: actions/setup-go@v6
+              with:
+                go-version: ${{ matrix.go }}
+            - name: Run Go Tests
+              run: go test ./...
+              
+    build:
+        strategy:
+            matrix:
+                go: [stable]
+                os: [ubuntu-latest, macos-latest, windows-latest]
+        name: build
+        runs-on: ${{ matrix.os }}
+        steps:
+            - uses: actions/checkout@v5
+            - uses: actions/setup-go@v6
+              with:
+                go-version: ${{ matrix.go }}
+            - name: Run Go buil
+              run: |
+                mkdir -p ./bin
+                go build -o ./bin/api ./cmd/api

@@ -45,8 +45,8 @@ func (h *MessageHandler) WireHttpHandler() http.Handler {
 	r.GET("/group/group-list", h.handleGetListOfGroups)
 	
 	r.DELETE("/message/:message_id", h.handleDeleteMessageByID)
-	r.DELETE("/thread/:thread_id", h.handleDeleteThreadByID)
-	r.DELETE("/group/:group_id", h.handleDeleteGroupByID)
+	r.DELETE("/thread/:thread_id/:created-by", h.handleDeleteThreadByID)
+	r.DELETE("/group/:group_id/:created-by", h.handleDeleteGroupByID)
 
 
 	return r
@@ -350,11 +350,21 @@ func (h *MessageHandler) handleDeleteMessageByID(c *gin.Context) {
 
 func (h *MessageHandler) handleDeleteThreadByID(c *gin.Context) {
 	id := c.Param("thread_id")
+	createdBy := c.Param("created-by")
 	if id == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "thread id is required"})
 		return
 	}
-	err := h.querier.DeleteThreadByID(c, id)
+	
+	if createdBy == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "created by is required"})
+		return
+	}
+	
+	err := h.querier.DeleteThreadByID(c, repo.DeleteThreadByIDParams{
+	ThreadID: id,
+	CreatedBy: &createdBy,
+	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -365,11 +375,22 @@ func (h *MessageHandler) handleDeleteThreadByID(c *gin.Context) {
 
 func (h *MessageHandler) handleDeleteGroupByID(c *gin.Context) {
 	id := c.Param("group_id")
+	createdBy := c.Param("created-by")
+	
 	if id == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "group id is required"})
 		return
 	}
-	err := h.querier.DeleteGroupByID(c, id)
+
+	if createdBy == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "created by is required"})
+		return
+	}
+
+	err := h.querier.DeleteGroupByID(c, repo.DeleteGroupByIDParams{
+		GpID: id,
+		CreatedBy: createdBy,
+	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
