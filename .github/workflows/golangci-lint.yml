@@ -30,6 +30,7 @@ jobs:
 
     test:
         name: test code
+        needs: [golangci, govulncheck_job]
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v5
@@ -41,13 +42,14 @@ jobs:
               
     build:
         name: build
+        needs: test
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v5
             - uses: actions/setup-go@v6
               with:
                 go-version: stable
-            - name: Run Go buil
+            - name: Run Go build
               run: |
                 mkdir -p ./bin
                 go build -o ./bin/api ./cmd/api
